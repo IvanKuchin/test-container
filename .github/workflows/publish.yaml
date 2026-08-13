@@ -1,8 +1,6 @@
 name: Release
 
 on:
-  push:
-    tags: ['v*']
   release:
     types: ['published']
 
@@ -42,6 +40,8 @@ jobs:
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
           echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
           echo "RELEASE_NUM=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
@@ -60,5 +60,5 @@ jobs:
             BUILD_DATE=${{ steps.vars.outputs.BUILD_DATE }}
             BUILD_VERSION=${{ github.sha }}
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ steps.vars.outputs.REPO_LOWER }}:${{ github.ref_name }}
+            ghcr.io/${{ steps.vars.outputs.REPO_LOWER }}:latest
